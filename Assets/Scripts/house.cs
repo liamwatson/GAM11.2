@@ -4,7 +4,6 @@ using System.Collections;
 public class house : MonoBehaviour {
     private float timer = 0;
     public float popcooldown = 3;
-    public int popreward = 2;
     public float buildingtime = 15;
     public float timer2 = 0;
     private bool buildingcomplete = false;
@@ -27,14 +26,14 @@ public class house : MonoBehaviour {
     }
     public void popupdate()
     {   
-        if (buildingcomplete == true && GameManager.Instance.power >= powerdrain && GameManager.Instance.population <= GameManager.Instance.maxpopulation - popreward)
+        if (buildingcomplete == true && GameManager.Instance.power >= powerdrain && GameManager.Instance.population <= GameManager.Instance.maxpopulation - GameManager.Instance.popreward)
         {
             timer -= Time.deltaTime;
             if (timer <= 0)
             {
                 if (GameManager.Instance.food > 0)
                 {
-                    GameManager.Instance.population += popreward;
+                    GameManager.Instance.reward(2);
                 }
                 GameManager.Instance.power -= powerdrain;
                 timer = popcooldown;
@@ -50,7 +49,7 @@ public class house : MonoBehaviour {
             transform.GetChild(0).gameObject.SetActive(true);
             buildingcomplete = true;
             timer2 = 0;
-            Debug.Log("Building complete");
+            GameManager.Instance.Messagefunction("House Complete!");
         }
     }
 }

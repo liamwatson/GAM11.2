@@ -3,12 +3,14 @@ using System.Collections;
 
 public class BuildingManager : MonoBehaviour {
     public GameObject HQmenu;
+    public GameObject Researchmenu;
     public Vector3 clicked;
     public bool buildingbeingplaced = false;
     public int buildingtoplace = 0;
     public bool researchcenterbuild = false;
     //sound variable
     public AudioClip constructionsound;
+    public AudioClip constructioncomplete;
 
     //building variables
     public GameObject farm;
@@ -19,6 +21,7 @@ public class BuildingManager : MonoBehaviour {
     public GameObject OilRefinery;
     public GameObject house;
     public GameObject researchcenter;
+    public GameObject powerplant;
 
     public static BuildingManager Instance;
     //light variables
@@ -63,7 +66,16 @@ public class BuildingManager : MonoBehaviour {
     {
         HQmenu.SetActive(false);
     }
-   
+
+    public void RESEARCHMENUCLICKED()
+    {
+        Researchmenu.SetActive(true);
+    }
+    public void RESEARCHMENUCLOSE()
+    {
+        Researchmenu.SetActive(false);
+    }
+
     public void Buyfarm()
     {
         if (GameManager.Instance.money >= 350)
@@ -140,6 +152,15 @@ public class BuildingManager : MonoBehaviour {
             HQmenu.SetActive(false);
         }
     }
+    public void BuyPowerplant()
+    {
+        if (GameManager.Instance.money >= 1200)
+        {
+            buildingbeingplaced = true;
+            buildingtoplace = 9;
+            HQmenu.SetActive(false);
+        }
+    }
     public void placebuilding(Vector3 clickedinput)
     {
         if (buildingtoplace == 1)
@@ -196,10 +217,22 @@ public class BuildingManager : MonoBehaviour {
             GameManager.Instance.money -= 1500;
             clicked = clickedinput;
             Instantiate(researchcenter, clicked, transform.rotation);
+            GameManager.Instance.researchcenterbuilt = true;
             researchcenterbuild = true; 
             buildingbeingplaced = false;
 
         }
+        if (buildingtoplace == 9)
+        {
+            GameManager.Instance.money -= 1200;
+            clicked = clickedinput;
+            Instantiate(powerplant, clicked, transform.rotation);
+            buildingbeingplaced = false;
+        }
         AudioSource.PlayClipAtPoint(constructionsound, clicked, 5f);
+    }
+    public void constructioncompletesound()
+    {
+        AudioSource.PlayClipAtPoint(constructioncomplete, clicked, 5f);
     }
 }

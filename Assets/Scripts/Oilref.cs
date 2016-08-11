@@ -4,7 +4,6 @@ using System.Collections;
 public class Oilref : MonoBehaviour {
     private float timer = 0;
     public float oilcooldown = 2;
-    public int oilreward = 3;
     public float buildingtime = 20;
     public float timer2 = 0;
     private bool buildingcomplete = false;
@@ -21,19 +20,17 @@ public class Oilref : MonoBehaviour {
     {
         oilupdate();
         buildingcompletefunction();
-
     }
     public void oilupdate()
     {
-        if (buildingcomplete == true && GameManager.Instance.power > powerdrain && GameManager.Instance.oil <= GameManager.Instance.maxoil)
+        if (buildingcomplete == true && GameManager.Instance.power > 0 && GameManager.Instance.oil <= GameManager.Instance.maxoil)
         {
             timer -= Time.deltaTime;
             if (timer <= 0)
             {
                 GameManager.Instance.power -= powerdrain;
-                GameManager.Instance.oil += oilreward;
+                GameManager.Instance.reward(4);
                 timer = oilcooldown;
-                Debug.Log("Oil has arrived");
             }
         }
     }
@@ -46,7 +43,7 @@ public class Oilref : MonoBehaviour {
             transform.GetChild(0).gameObject.SetActive(true);
             buildingcomplete = true;
             timer2 = 0;
-            Debug.Log("Building complete");
+            GameManager.Instance.Messagefunction("Oil Drill Complete");
         }
     }
 }

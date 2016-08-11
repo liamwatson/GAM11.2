@@ -3,11 +3,34 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour {
+    //message variables
+    public GameObject MessageGo;
+    public Text messagetext;
+
+    //pause variables
+    private bool ispaused = false;
+    public GameObject pausedgo;
 
     //music variables
     public AudioSource music;
     public AudioClip daymusic;
     public AudioClip nightmusic;
+
+    //research center variables
+    public GameObject researchcentericon;
+    public bool researchcenterbuilt = false;
+    private bool rbran = false;
+    public bool researchcentercomplete = false;
+    public GameObject reasearchicon;
+
+    public GameObject Reasearch1;
+    public GameObject Reasearch2;
+    public GameObject Reasearch3;
+    public GameObject Reasearch4;
+    public GameObject Reasearch5;
+    public GameObject Reasearch6;
+    public GameObject Reasearch7;
+    public GameObject Reasearch8;
 
     //timer variables
     public GameObject TimerGameobject;
@@ -22,6 +45,12 @@ public class GameManager : MonoBehaviour {
     private bool nightcyclefinished = false;
     public int GameHour = 8;
     public Light sun;
+
+    //reward variables
+    public int foodreward = 1;
+    public int popreward = 1;
+    public int powerreward = 1;
+    public int oilreward = 1;
 
     //no food variables
     public float poplosstimercooldown = 3;
@@ -45,7 +74,7 @@ public class GameManager : MonoBehaviour {
     public int maxoil = 100;
     public int population = 0;
     public int maxpopulation = 0;
-    public int foodreqper10pop = 1;
+    public int foodreqper10pop = 2;
     public int taxmodifier = 3;
 
     public Text FoodText;
@@ -68,7 +97,9 @@ public class GameManager : MonoBehaviour {
         music.clip = daymusic;
         music.PlayDelayed(1);
         poptimer = poplosstimercooldown;
-	}
+        reasearchicon.SetActive(false);
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -78,20 +109,60 @@ public class GameManager : MonoBehaviour {
         GuiUpdate();
         nofoodfunction();
         loss();
+        researchcenterbuiltfunction();
+        if(power <= 0)
+            GameManager.Instance.Messagefunction("Warning no power, Production stopped");
+    }
+
+    public void Messagefunction(string messagetodisplay)
+    {
+        messagetext = MessageGo.GetComponent<Text>();
+        messagetext.text = messagetodisplay;
+    }
+
+    public void pausefunction()
+    {
+        Debug.Log(ispaused);
+        if (ispaused == false)
+        {
+            Time.timeScale = 0;
+            pausedgo.SetActive(true);
+            ispaused = true;
+        }
+       else if (ispaused == true)
+        {
+            Time.timeScale = 1;
+            pausedgo.SetActive(false);
+            ispaused = false;
+        }
+    }
+
+    public void researchcenterbuiltfunction()
+    {
+        if (researchcenterbuilt == true && rbran == false)
+        {
+            researchcentericon.SetActive(false);
+            rbran = true;
+        }
+}
+    void win()
+    {
+        if (population >= 1500)
+        {
+            PlayerPrefs.SetInt("wincond", 1);
+            SceneManager.LoadScene(2);
+        }
     }
     void loss()
     {
         if (population <= 0)
         {
+            PlayerPrefs.SetInt("wincond", 2);
             SceneManager.LoadScene(2);
         }
     }
     public void nofoodfunction()
     {
-        if (population < 0)
-        {
-            population = 0;
-        }
         if (poptimer >= 0)
         {
             poptimer -= Time.deltaTime;
@@ -100,6 +171,7 @@ public class GameManager : MonoBehaviour {
         {
             if (food <= 0)
             {
+                Messagefunction("Your Population is Starving");
                 if (population > 100)
                 {
                     population -= ((population / 100) * (poplosspercent));
@@ -135,6 +207,7 @@ public class GameManager : MonoBehaviour {
                 }
                 else
                 {
+                    Messagefunction("Its Night!");
                     musicchanged = false;
                     isnight = true;
                     nightcyclefinished = true;
@@ -155,6 +228,7 @@ public class GameManager : MonoBehaviour {
             }
             else
             {
+                Messagefunction("Its Morning!");
                 musicchanged = false;
                 isnight = false;
                 nightcyclefinished = false;
@@ -185,6 +259,7 @@ public class GameManager : MonoBehaviour {
     {
         if (GameHour >= 24.5f)
         {
+            Messagefunction("Tax Recieved: " + "$" + population * taxmodifier);
             money += population * taxmodifier;
             GameHour = 0;
             hourtext = TimerGameobject.GetComponent<Text>();
@@ -199,6 +274,7 @@ public class GameManager : MonoBehaviour {
             if (food > 0)
             {
                 food -= foodreqper10pop * (population / 10);
+                Messagefunction("Food Consumed: " + foodreqper10pop * (population / 10));
             }
             GameHour += 1;
             TimerHour = 0;
@@ -206,4 +282,104 @@ public class GameManager : MonoBehaviour {
             hourtext.text = "Time: " + GameHour + ":00";
         }
     }
+    public void reward(int whatreward)
+    {
+        if (whatreward == 1)
+        {
+            food += foodreward;
+        }
+        if (whatreward == 2)
+        {
+            population += popreward;
+        }
+        if (whatreward == 3)
+        {
+            power += powerreward;
+        }
+        if (whatreward == 4)
+        {
+            oil += oilreward;
+        }
+    }
+    public void researchpowerconsumption()
+    {
+        if (money >= 500)
+        {
+            powerusedperhour = powerusedperhour / 2;
+            Reasearch1.SetActive(false);
+            money -= 500;
+            Messagefunction("HQ will now use less power");
+        }
+    }
+    public void researchtax()
+    {
+        if (money >= 1500)
+        {
+            taxmodifier += 2;
+            Reasearch2.SetActive(false);
+            money -= 500;
+            Messagefunction("Tax Increased");
+        }
+    }
+    public void researchsurvival()
+    {
+        if (money >= 1300)
+        {
+            poplosstimercooldown += 2;
+            Reasearch3.SetActive(false);
+            money -= 1300;
+            Messagefunction("Better Starvation Survival Researched");
+        }
+    }
+    public void unlockpowerplan()
+    {
+        if (money >= 2000)
+        {
+            Reasearch4.SetActive(false);
+            reasearchicon.SetActive(true);
+            money -= 2000;
+            Messagefunction("Power Plant Unlocked");
+        }
+    }
+    public void increasefoodresearch()
+    {
+        if (money >= 1000)
+        {
+            Reasearch5.SetActive(false);
+            foodreward += 1;
+            money -= 1000;
+            Messagefunction("Researched Better Food Growing");
+        }
+    }
+    public void increasepowerresearch()
+    {
+        if (money >= 1300)
+        {
+            Reasearch6.SetActive(false);
+            powerreward += 1;
+            money -= 1300;
+            Messagefunction("Researched Increased Power Generation");
+        }
+    }
+    public void increasepopgrowth()
+    {
+        if (money >= 1300)
+        {
+            Reasearch7.SetActive(false);
+            popreward += 1;
+            money -= 1300;
+            Messagefunction("Researched Higher Population Growth");
+        }
+    }
+    public void increaseoilreward()
+    {
+        if (money >= 900)
+        {
+            Reasearch8.SetActive(false);
+            oilreward += 1;
+            money -= 900;
+            Messagefunction("Researched Better Oil Mining");
+        }
+    }
+
 }

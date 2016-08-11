@@ -5,7 +5,6 @@ public class Solarpanel : MonoBehaviour {
 
     private float timer = 0;
     public float powercooldown = 2;
-    public int powerreward = 3;
     public float buildingtime = 10;
     public float timer2 = 0;
     private bool buildingcomplete = false;
@@ -31,9 +30,8 @@ public class Solarpanel : MonoBehaviour {
             timer -= Time.deltaTime;
             if (timer <= 0)
             {
-                GameManager.Instance.power += powerreward;
+                GameManager.Instance.reward(3);
                 timer = powercooldown;
-                Debug.Log("power has arrived");
             }
         }
     }
@@ -46,7 +44,7 @@ public class Solarpanel : MonoBehaviour {
             transform.GetChild(0).gameObject.SetActive(true);
             buildingcomplete = true;
             timer2 = 0;
-            Debug.Log("Building complete");
+            GameManager.Instance.Messagefunction("Solar Panel Complete");
         }
     }
 }

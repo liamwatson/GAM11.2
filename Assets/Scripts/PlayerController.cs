@@ -55,6 +55,11 @@ public class PlayerController : MonoBehaviour {
                         Debug.Log("Hit HQ");
                         hitInfo.collider.gameObject.GetComponent<BuildingManager>().HQMENUCLICKED();
                     }
+                    if (hitInfo.transform.gameObject.name == "ResearchCenter(Clone)" && GameManager.Instance.researchcentercomplete == true)
+                    {
+                        Debug.Log("Hit Research center");
+                        BuildingManager.Instance.RESEARCHMENUCLICKED();
+                    }
                     else if (hitInfo.transform.gameObject.name == "oil refinary(Clone)")
                     {
                         Debug.Log("oil refinary detection working cunt");

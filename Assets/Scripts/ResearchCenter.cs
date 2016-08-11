@@ -42,10 +42,11 @@ public class ResearchCenter : MonoBehaviour {
             timer2 += Time.deltaTime;
         if (timer2 >= buildingtime)
         {
+            GameManager.Instance.researchcentercomplete = true;
             transform.GetChild(0).gameObject.SetActive(true);
             buildingcomplete = true;
             timer2 = 0;
-            Debug.Log("Building complete");
+            GameManager.Instance.Messagefunction("Research Center Complete");
         }
     }
 }

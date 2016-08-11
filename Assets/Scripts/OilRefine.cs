@@ -35,7 +35,6 @@ public class OilRefine : MonoBehaviour {
                 GameManager.Instance.oil -= oilconsumption;
                 GameManager.Instance.money += moneyreward;
                 timer = refcooldown;
-                Debug.Log("Money has arrived");
             }
         }
     }
@@ -48,7 +47,7 @@ public class OilRefine : MonoBehaviour {
             transform.GetChild(0).gameObject.SetActive(true);
             buildingcomplete = true;
             timer2 = 0;
-            Debug.Log("Building complete");
+            GameManager.Instance.Messagefunction("Oil Refinary Complete");
         }
     }
 }

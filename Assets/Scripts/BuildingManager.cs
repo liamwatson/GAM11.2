@@ -8,9 +8,9 @@ public class BuildingManager : MonoBehaviour {
     public bool buildingbeingplaced = false;
     public int buildingtoplace = 0;
     public bool researchcenterbuild = false;
+    
     //sound variable
     public AudioClip constructionsound;
-    public AudioClip constructioncomplete;
 
     //building variables
     public GameObject farm;
@@ -23,11 +23,11 @@ public class BuildingManager : MonoBehaviour {
     public GameObject researchcenter;
     public GameObject powerplant;
 
+
     public static BuildingManager Instance;
     //light variables
     public GameObject l1;
     public GameObject l2;
-    public GameObject l3;
     public GameObject l4;
 
     void Awake()
@@ -45,14 +45,12 @@ public class BuildingManager : MonoBehaviour {
         {
             l1.SetActive(true);
             l2.SetActive(true);
-            l3.SetActive(true);
             l4.SetActive(true);
         }
         else
         {
             l1.SetActive(false);
             l2.SetActive(false);
-            l3.SetActive(false);
             l4.SetActive(false);
         }
         
@@ -78,12 +76,16 @@ public class BuildingManager : MonoBehaviour {
 
     public void Buyfarm()
     {
-        if (GameManager.Instance.money >= 350)
+        if (GameManager.Instance.money >= 650)
         {
             
             buildingbeingplaced = true;
             buildingtoplace = 1;
             HQmenu.SetActive(false);
+        }
+        else
+        {
+            GameManager.Instance.Messagefunction("You cant afford this");
         }
     }
     public void BuySolarpanel()
@@ -95,6 +97,10 @@ public class BuildingManager : MonoBehaviour {
             buildingtoplace = 2;
             HQmenu.SetActive(false);
         }
+        else
+        {
+            GameManager.Instance.Messagefunction("You cant afford this");
+        }
     }
     public void Buyenergystorage()
     {
@@ -104,6 +110,10 @@ public class BuildingManager : MonoBehaviour {
             buildingtoplace = 3;
             HQmenu.SetActive(false);
         }
+        else
+        {
+            GameManager.Instance.Messagefunction("You cant afford this");
+        }
     }
     public void Buyfoodstorage()
     {
@@ -112,6 +122,10 @@ public class BuildingManager : MonoBehaviour {
             buildingbeingplaced = true;
             buildingtoplace = 4;
             HQmenu.SetActive(false);
+        }
+        else
+        {
+            GameManager.Instance.Messagefunction("You cant afford this");
         }
     }
     public void BuyOilMine()
@@ -123,6 +137,10 @@ public class BuildingManager : MonoBehaviour {
             buildingtoplace = 5;
             HQmenu.SetActive(false);
         }
+        else
+        {
+            GameManager.Instance.Messagefunction("You cant afford this");
+        }
     }
     public void Buyref()
     {
@@ -133,6 +151,10 @@ public class BuildingManager : MonoBehaviour {
             buildingtoplace = 6;
             HQmenu.SetActive(false);
         }
+        else
+        {
+            GameManager.Instance.Messagefunction("You cant afford this");
+        }
     }
     public void Buyhouse()
     {
@@ -141,6 +163,10 @@ public class BuildingManager : MonoBehaviour {
             buildingbeingplaced = true;
             buildingtoplace = 7;
             HQmenu.SetActive(false);
+        }
+        else
+        {
+            GameManager.Instance.Messagefunction("You cant afford this");
         }
     }
     public void Buyresearch()
@@ -151,6 +177,10 @@ public class BuildingManager : MonoBehaviour {
             buildingtoplace = 8;
             HQmenu.SetActive(false);
         }
+        else
+        {
+            GameManager.Instance.Messagefunction("You cant afford this");
+        }
     }
     public void BuyPowerplant()
     {
@@ -160,12 +190,16 @@ public class BuildingManager : MonoBehaviour {
             buildingtoplace = 9;
             HQmenu.SetActive(false);
         }
+        else
+        {
+            GameManager.Instance.Messagefunction("You cant afford this");
+        }
     }
     public void placebuilding(Vector3 clickedinput)
     {
         if (buildingtoplace == 1)
         {
-            GameManager.Instance.money -= 350;
+            GameManager.Instance.money -= 650;
             clicked = clickedinput;
             Instantiate(farm, clicked, transform.rotation);
             buildingbeingplaced = false;
@@ -230,9 +264,5 @@ public class BuildingManager : MonoBehaviour {
             buildingbeingplaced = false;
         }
         AudioSource.PlayClipAtPoint(constructionsound, clicked, 5f);
-    }
-    public void constructioncompletesound()
-    {
-        AudioSource.PlayClipAtPoint(constructioncomplete, clicked, 5f);
     }
 }

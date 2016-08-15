@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour {
     //message variables
     public GameObject MessageGo;
     public Text messagetext;
+    //no power variables
+    private bool hastriggerd = false;
 
     //pause variables
     private bool ispaused = false;
@@ -45,6 +47,7 @@ public class GameManager : MonoBehaviour {
     private bool nightcyclefinished = false;
     public int GameHour = 8;
     public Light sun;
+    public float powerpercent;
 
     //reward variables
     public int foodreward = 1;
@@ -100,9 +103,9 @@ public class GameManager : MonoBehaviour {
         reasearchicon.SetActive(false);
 
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update() {
         TimerHour += Time.deltaTime;
         GameTime();
         Nightcycle();
@@ -110,8 +113,37 @@ public class GameManager : MonoBehaviour {
         nofoodfunction();
         loss();
         researchcenterbuiltfunction();
-        if(power <= 0)
-            GameManager.Instance.Messagefunction("Warning no power, Production stopped");
+        minmaxcapfunction();
+        win();
+        if (power <= 0 && hastriggerd == false)
+        { 
+            GameManager.Instance.Messagefunction("Warning no power");
+            hastriggerd = true;
+        }
+       else if (power > 0 && hastriggerd == true)
+            hastriggerd = false;
+
+    }
+
+    private void minmaxcapfunction()
+    {
+        if (food < 0)
+            food = 0;
+
+        if (oil < 0)
+            oil = 0;
+
+        if (power < 0)
+            power = 0;
+
+        if (food > maxfood)
+            food = maxfood;
+
+        if (oil > maxoil)
+            oil = maxoil;
+
+        if (power > maxpower)
+            power = maxpower;
     }
 
     public void Messagefunction(string messagetodisplay)
@@ -201,9 +233,9 @@ public class GameManager : MonoBehaviour {
                     music.PlayDelayed(1);
                     musicchanged = true;
                 }
-                if (sun.intensity > 0.15f)
+                if (sun.intensity > 0.05f)
                 {
-                    sun.intensity -= 0.00050f;
+                    sun.intensity -= 0.002f;
                 }
                 else
                 {
@@ -224,7 +256,7 @@ public class GameManager : MonoBehaviour {
             }
                 if (sun.intensity < 1)
             {
-                sun.intensity += 0.00050f;
+                sun.intensity += 0.002f;
             }
             else
             {
@@ -243,8 +275,9 @@ public class GameManager : MonoBehaviour {
         MoneyText = MoneyGameobject.GetComponent<Text>();
         MoneyText.text = "$: " + money;
 
+        powerpercent = ((float)power / (float)maxpower)*100;
         PowerText = PowerGameobject.GetComponent<Text>();
-        PowerText.text = "Power: " + power;
+        PowerText.text = "Power: " + powerpercent.ToString("n2") + "%";
 
         OilText = OilGameobject.GetComponent<Text>();
         OilText.text = "Oil: " + oil;
@@ -259,8 +292,6 @@ public class GameManager : MonoBehaviour {
     {
         if (GameHour >= 24.5f)
         {
-            Messagefunction("Tax Recieved: " + "$" + population * taxmodifier);
-            money += population * taxmodifier;
             GameHour = 0;
             hourtext = TimerGameobject.GetComponent<Text>();
             hourtext.text = "Time: " + GameHour + ":00";
@@ -276,6 +307,8 @@ public class GameManager : MonoBehaviour {
                 food -= foodreqper10pop * (population / 10);
                 Messagefunction("Food Consumed: " + foodreqper10pop * (population / 10));
             }
+            Messagefunction("Tax Recieved: " + "$" + (population / 10) * taxmodifier);
+            money += (population / 10) * taxmodifier;
             GameHour += 1;
             TimerHour = 0;
             hourtext = TimerGameobject.GetComponent<Text>();
@@ -317,7 +350,7 @@ public class GameManager : MonoBehaviour {
         {
             taxmodifier += 2;
             Reasearch2.SetActive(false);
-            money -= 500;
+            money -= 1500;
             Messagefunction("Tax Increased");
         }
     }

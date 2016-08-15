@@ -60,9 +60,10 @@ public class PlayerController : MonoBehaviour {
                         Debug.Log("Hit Research center");
                         BuildingManager.Instance.RESEARCHMENUCLICKED();
                     }
-                    else if (hitInfo.transform.gameObject.name == "oil refinary(Clone)")
+                    else if (hitInfo.transform.gameObject.tag == "Building")
                     {
-                        Debug.Log("oil refinary detection working cunt");
+                        hitInfo.transform.gameObject.SendMessageUpwards("toggleactive");
+                        Debug.Log("you toggle the building on/off");
                     }
                     else
                     {
@@ -80,7 +81,7 @@ public class PlayerController : MonoBehaviour {
     private void mousescroll()
     {
         var input = Input.GetAxis("Mouse ScrollWheel");
-        if (input > 0f && transform.position.y >= 40)
+        if (input > 0f && transform.position.y >= 50)
         {
             Debug.Log("scroll up");
             transform.Translate(Vector3.forward * Time.deltaTime * 300);
@@ -102,14 +103,14 @@ public class PlayerController : MonoBehaviour {
             if (scrollspeed <= maxscrollspeed)
                 scrollspeed += scrollspeedAcc;
         }
-        else if (Input.GetKey("a")  && transform.position.x >= 133 && Input.GetKey("w") && transform.position.z <= 422)
+        else if (Input.GetKey("a")  && transform.position.x >= 133 && Input.GetKey("w") && transform.position.z <= 373)
         {
             transform.Translate(Vector3.left * (Time.deltaTime * scrollspeed) / 1.5f);
             transform.Translate(Vector3.up * (Time.deltaTime * scrollspeed) / 1.5f);
             if (scrollspeed <= maxscrollspeed)
                 scrollspeed += scrollspeedAcc;
         }
-        else if (Input.GetKey("w") && transform.position.z <= 422 && Input.GetKey("d") && transform.position.x <= 370)
+        else if (Input.GetKey("w") && transform.position.z <= 373 && Input.GetKey("d") && transform.position.x <= 370)
         {
             transform.Translate(Vector3.up * (Time.deltaTime * scrollspeed) / 1.5f);
             transform.Translate(Vector3.right * (Time.deltaTime * scrollspeed) / 1.5f);
@@ -136,7 +137,7 @@ public class PlayerController : MonoBehaviour {
             if (scrollspeed <= maxscrollspeed)
                 scrollspeed += scrollspeedAcc;
         }
-        else if (Input.GetKey("w") && transform.position.z <= 422)
+        else if (Input.GetKey("w") && transform.position.z <= 373)
         {
             transform.Translate(Vector3.up * Time.deltaTime * scrollspeed);
             if (scrollspeed <= maxscrollspeed)

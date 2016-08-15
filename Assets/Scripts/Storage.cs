@@ -8,11 +8,11 @@ public class Storage : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        if (this.gameObject.name == "PowerStorage(Clone)")
+        if (this.gameObject.name == "Power Storage(Clone)")
         {
             GameManager.Instance.maxpower += powerstoragereward;
         }
-        if (this.gameObject.name == "FoodStorage(Clone)")
+        if (this.gameObject.name == "Food Storage(Clone)")
         {
             GameManager.Instance.maxfood += foodstoragereward;
         }

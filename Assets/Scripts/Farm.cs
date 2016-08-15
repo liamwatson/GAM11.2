@@ -12,7 +12,7 @@ public class Farm : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         timer = foodcooldown;
-        transform.GetChild(0).gameObject.SetActive(false);
+        transform.GetChild(1).gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -40,7 +40,7 @@ public class Farm : MonoBehaviour {
         timer2 += Time.deltaTime;
         if (timer2 >= buildingtime)
         {
-            transform.GetChild(0).gameObject.SetActive(true);
+            transform.GetChild(1).gameObject.SetActive(true);
             buildingcomplete = true;
             timer2 = 0;
             GameManager.Instance.Messagefunction("Farm Complete");

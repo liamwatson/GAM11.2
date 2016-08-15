@@ -24,9 +24,13 @@ public class endmanager : MonoBehaviour {
             losspic.SetActive(true);
         }
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    public void mainmenu()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void exit()
+    {
+        Application.Quit();
+    }
 }

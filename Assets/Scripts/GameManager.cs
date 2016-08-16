@@ -68,6 +68,7 @@ public class GameManager : MonoBehaviour {
     public GameObject Populationgameobject;
     public GameObject MaxPopulationgameobject;
 
+    //resource variables
     public int money = 1000;
     public int food = 25;
     public int maxfood = 100;
@@ -80,6 +81,10 @@ public class GameManager : MonoBehaviour {
     public int foodreqper10pop = 2;
     public int taxmodifier = 3;
 
+    //menu open variable
+    public bool Menuopen = false;
+    
+    //text variables
     public Text FoodText;
     public Text PowerText;
     public Text OilText;
@@ -90,6 +95,7 @@ public class GameManager : MonoBehaviour {
     //singleton declaration
     public static GameManager Instance;
 
+    //singlton declaration
     void Awake()
     {
         Instance = this;
@@ -97,15 +103,15 @@ public class GameManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        //play the morning music and delay it by one second, update the variables 
         music.clip = daymusic;
         music.PlayDelayed(1);
         poptimer = poplosstimercooldown;
         reasearchicon.SetActive(false);
-
     }
 
-    // Update is called once per frame
     void Update() {
+        //run all these functions every frame
         TimerHour += Time.deltaTime;
         GameTime();
         Nightcycle();
@@ -115,6 +121,7 @@ public class GameManager : MonoBehaviour {
         researchcenterbuiltfunction();
         minmaxcapfunction();
         win();
+        //check if there is power and update the player
         if (power <= 0 && hastriggerd == false)
         { 
             GameManager.Instance.Messagefunction("Warning no power");
@@ -124,7 +131,13 @@ public class GameManager : MonoBehaviour {
             hastriggerd = false;
 
     }
+    //GUI quit button
+    public void quitbutton()
+    {
+        Application.Quit();
+    }
 
+    // a function added towards the end to clamp the min and max amount for GUI purposes
     private void minmaxcapfunction()
     {
         if (food < 0)
@@ -145,13 +158,13 @@ public class GameManager : MonoBehaviour {
         if (power > maxpower)
             power = maxpower;
     }
-
+    // a function implemented to display messages to the player, it takes a string and displays it
     public void Messagefunction(string messagetodisplay)
     {
         messagetext = MessageGo.GetComponent<Text>();
         messagetext.text = messagetodisplay;
     }
-
+    // this function switches between paused and not altering Time.timeScale
     public void pausefunction()
     {
         Debug.Log(ispaused);
@@ -168,7 +181,8 @@ public class GameManager : MonoBehaviour {
             ispaused = false;
         }
     }
-
+    // this makes sure that only one research center can be built, once it is it will turn off the icon GUI so the 
+    //player cant see it and will stop the if statment from running (efficency)
     public void researchcenterbuiltfunction()
     {
         if (researchcenterbuilt == true && rbran == false)
@@ -176,7 +190,8 @@ public class GameManager : MonoBehaviour {
             researchcentericon.SetActive(false);
             rbran = true;
         }
-}
+    }   
+    //win condition for the player if the pop reaches 1500+ then set the playerpref and load the end level
     void win()
     {
         if (population >= 1500)
@@ -185,6 +200,7 @@ public class GameManager : MonoBehaviour {
             SceneManager.LoadScene(2);
         }
     }
+    //lose condition, if the pop reaches 0 or less then update the player pref and goto end level
     void loss()
     {
         if (population <= 0)
@@ -193,6 +209,8 @@ public class GameManager : MonoBehaviour {
             SceneManager.LoadScene(2);
         }
     }
+
+    //if the player has no food then punich the players popilation
     public void nofoodfunction()
     {
         if (poptimer >= 0)
@@ -206,13 +224,16 @@ public class GameManager : MonoBehaviour {
                 Messagefunction("Your Population is Starving");
                 if (population > 100)
                 {
+                    //if population is over 100 then players will lose a % of its pop per cycle
                     population -= ((population / 100) * (poplosspercent));
                     food = 0;
                     poptimer = poplosstimercooldown;
                 }
                 else if (population <= 100)
                 {
-                    population -= 10;
+                    //random amount of people die between 0 and 10 when the pop is lower that 100
+                    int rnddie = Random.Range(0, 10);
+                    population -= rnddie;
                     food = 0;
                     poptimer = poplosstimercooldown;
                 }
@@ -220,7 +241,7 @@ public class GameManager : MonoBehaviour {
         }
     }
     
-
+    //this controls the light and darkness for the game giving the effect of day night
     public void Nightcycle()
     {
         if (GameHour >= nighttime)
@@ -229,16 +250,19 @@ public class GameManager : MonoBehaviour {
             {
                 if (musicchanged == false)
                 {
+                    //chances music to night music
                     music.clip = nightmusic;
                     music.PlayDelayed(1);
                     musicchanged = true;
                 }
+                //checks the intensity of sun and modifies it until its at the required dark amount
                 if (sun.intensity > 0.05f)
                 {
                     sun.intensity -= 0.002f;
                 }
                 else
                 {
+                    //once finished updates to night for the purposes of day kicking back in
                     Messagefunction("Its Night!");
                     musicchanged = false;
                     isnight = true;
@@ -246,20 +270,24 @@ public class GameManager : MonoBehaviour {
                 }
             }
         }
+        //begins the morning cycle
         if (GameHour >= morningtime && GameHour < morningtime + 1 && nightcyclefinished == true)
         {
             if (musicchanged == false)
             {
+                //changes music to morning music
                 music.clip = daymusic;
                 music.PlayDelayed(1);
                 musicchanged = true;
             }
+            //sets the sun intencity untill its required amount reached
                 if (sun.intensity < 1)
             {
                 sun.intensity += 0.002f;
             }
             else
             {
+                //then morning bools are kicked in and its morning
                 Messagefunction("Its Morning!");
                 musicchanged = false;
                 isnight = false;
@@ -267,6 +295,7 @@ public class GameManager : MonoBehaviour {
             }
         }
     }
+    // this function runs and updates all the text on the GUI and displays it
     public void GuiUpdate()
     {
         FoodText = FoodGameobject.GetComponent<Text>();
@@ -275,6 +304,7 @@ public class GameManager : MonoBehaviour {
         MoneyText = MoneyGameobject.GetComponent<Text>();
         MoneyText.text = "$: " + money;
 
+        //power percent basically compairs the max and the current energy to display a % value.
         powerpercent = ((float)power / (float)maxpower)*100;
         PowerText = PowerGameobject.GetComponent<Text>();
         PowerText.text = "Power: " + powerpercent.ToString("n2") + "%";
@@ -288,14 +318,20 @@ public class GameManager : MonoBehaviour {
         MaxPopulationText = MaxPopulationgameobject.GetComponent<Text>();
         MaxPopulationText.text = "Max: " + maxpopulation;
     }
+
+    //function that controlls the in game hour (24 hour clock)
     public void GameTime()
     {
+        //checks if the day is complete
         if (GameHour >= 24.5f)
         {
+            //if it is start back at 0 (looks like a 24 hour clock)
             GameHour = 0;
             hourtext = TimerGameobject.GetComponent<Text>();
+            //display it as a 24 hour clock
             hourtext.text = "Time: " + GameHour + ":00";
         }
+        //checks if the timer per hour has been met, if it has update the hour
         if (TimerHour >= TimePerHour)
         {
             if (power > 0 )
@@ -304,9 +340,13 @@ public class GameManager : MonoBehaviour {
                }
             if (food > 0)
             {
+                //updates the food based on teh population (consumption)
                 food -= foodreqper10pop * (population / 10);
-                Messagefunction("Food Consumed: " + foodreqper10pop * (population / 10));
+                //the function below used to display how much food was being used and still works
+                //but i replaced the amount of food consumed with the amount of tax generated every hour
+                //Messagefunction("Food Consumed: " + foodreqper10pop * (population / 10));
             }
+            //displays the amount of income (tax) the player recieves per in game hour in relation to pop
             Messagefunction("Tax Recieved: " + "$" + (population / 10) * taxmodifier);
             money += (population / 10) * taxmodifier;
             GameHour += 1;
@@ -315,6 +355,8 @@ public class GameManager : MonoBehaviour {
             hourtext.text = "Time: " + GameHour + ":00";
         }
     }
+    //reward function used with prefabs inorder to simplify the rewarded resource, when this function is called
+    //it is called with an int that dictates what reward the player gets
     public void reward(int whatreward)
     {
         if (whatreward == 1)
@@ -334,6 +376,9 @@ public class GameManager : MonoBehaviour {
             oil += oilreward;
         }
     }
+    //research that is ran when the button on the reasearch GUI is pressed
+    //this function also closes the GUI button too making it so it cant be bought more than once and displays
+    //to the user what has been bought and updates the money of the player
     public void researchpowerconsumption()
     {
         if (money >= 500)
@@ -344,6 +389,9 @@ public class GameManager : MonoBehaviour {
             Messagefunction("HQ will now use less power");
         }
     }
+    //research that is ran when the button on the reasearch GUI is pressed
+    //this function also closes the GUI button too making it so it cant be bought more than once and displays
+    //to the user what has been bought and updates the money of the player
     public void researchtax()
     {
         if (money >= 1500)
@@ -354,6 +402,9 @@ public class GameManager : MonoBehaviour {
             Messagefunction("Tax Increased");
         }
     }
+    //research that is ran when the button on the reasearch GUI is pressed
+    //this function also closes the GUI button too making it so it cant be bought more than once and displays
+    //to the user what has been bought and updates the money of the player
     public void researchsurvival()
     {
         if (money >= 1300)
@@ -364,6 +415,9 @@ public class GameManager : MonoBehaviour {
             Messagefunction("Better Starvation Survival Researched");
         }
     }
+    //research that is ran when the button on the reasearch GUI is pressed
+    //this function also closes the GUI button too making it so it cant be bought more than once and displays
+    //to the user what has been bought and updates the money of the player
     public void unlockpowerplan()
     {
         if (money >= 2000)
@@ -374,6 +428,9 @@ public class GameManager : MonoBehaviour {
             Messagefunction("Power Plant Unlocked");
         }
     }
+    //research that is ran when the button on the reasearch GUI is pressed
+    //this function also closes the GUI button too making it so it cant be bought more than once and displays
+    //to the user what has been bought and updates the money of the player
     public void increasefoodresearch()
     {
         if (money >= 1000)
@@ -384,6 +441,9 @@ public class GameManager : MonoBehaviour {
             Messagefunction("Researched Better Food Growing");
         }
     }
+    //research that is ran when the button on the reasearch GUI is pressed
+    //this function also closes the GUI button too making it so it cant be bought more than once and displays
+    //to the user what has been bought and updates the money of the player
     public void increasepowerresearch()
     {
         if (money >= 1300)
@@ -394,6 +454,9 @@ public class GameManager : MonoBehaviour {
             Messagefunction("Researched Increased Power Generation");
         }
     }
+    //research that is ran when the button on the reasearch GUI is pressed
+    //this function also closes the GUI button too making it so it cant be bought more than once and displays
+    //to the user what has been bought and updates the money of the player
     public void increasepopgrowth()
     {
         if (money >= 1300)
@@ -404,6 +467,9 @@ public class GameManager : MonoBehaviour {
             Messagefunction("Researched Higher Population Growth");
         }
     }
+    //research that is ran when the button on the reasearch GUI is pressed
+    //this function also closes the GUI button too making it so it cant be bought more than once and displays
+    //to the user what has been bought and updates the money of the player
     public void increaseoilreward()
     {
         if (money >= 900)

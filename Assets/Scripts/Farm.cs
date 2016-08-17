@@ -17,6 +17,7 @@ public class Farm : MonoBehaviour {
         //set the initilisation of game objects
         timer = foodcooldown;
         transform.GetChild(1).gameObject.SetActive(false);
+        GameManager.Instance.farmsamountai += 1;
 	}
 	void Update () {
         //run the functions every frame
@@ -27,7 +28,7 @@ public class Farm : MonoBehaviour {
     //if its day and the farm has power and hasnt reached full amount it will produce food and add it to the game manager
     public void foodupdate()
     {
-        if(buildingcomplete == true && GameManager.Instance.power >= powerdrain && GameManager.Instance.food <= GameManager.Instance.maxfood && GameManager.Instance.GameHour >= 7 && GameManager.Instance.GameHour < 22)
+        if(buildingcomplete == true && GameManager.Instance.power >= powerdrain && GameManager.Instance.food <= GameManager.Instance.maxfood && GameManager.Instance.GameHour >= GameManager.Instance.morningtime && GameManager.Instance.GameHour < GameManager.Instance.nighttime)
         {
             timer -= Time.deltaTime;
             if (timer <= 0)

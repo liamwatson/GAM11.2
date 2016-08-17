@@ -39,7 +39,7 @@ public class BuildingManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         //turns the lights on the HQ on when its night and off when its morning
-        if (GameManager.Instance.GameHour >= 22 && GameManager.Instance.power > 0 || GameManager.Instance.GameHour < 7 && GameManager.Instance.power >0)
+        if (GameManager.Instance.GameHour >= GameManager.Instance.nighttime && GameManager.Instance.power > 0 || GameManager.Instance.GameHour < GameManager.Instance.morningtime && GameManager.Instance.power >0)
         {
             l1.SetActive(true);
             l2.SetActive(true);

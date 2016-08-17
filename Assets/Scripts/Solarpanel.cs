@@ -18,6 +18,7 @@ public class Solarpanel : MonoBehaviour {
     {
         timer = powercooldown;
         transform.GetChild(0).gameObject.SetActive(false);
+        GameManager.Instance.solarpanelsamountai += 1;
     }
 
     // Update is called once per frame
@@ -31,7 +32,7 @@ public class Solarpanel : MonoBehaviour {
     //main function, this will check if the building is complete, if its day and reward the player with power
     public void powerupdate()
     {
-        if (buildingcomplete == true && GameManager.Instance.GameHour >= 7 && GameManager.Instance.GameHour < 22 && GameManager.Instance.power <= GameManager.Instance.maxpower)
+        if (buildingcomplete == true && GameManager.Instance.GameHour >= GameManager.Instance.morningtime && GameManager.Instance.GameHour < GameManager.Instance.nighttime && GameManager.Instance.power <= GameManager.Instance.maxpower)
         {
             timer -= Time.deltaTime;
             if (timer <= 0)

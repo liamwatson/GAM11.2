@@ -22,6 +22,7 @@ public class house : MonoBehaviour {
         //start of the game update the appropriate objects and variables
         timer = popcooldown;
         GameManager.Instance.maxpopulation += 50;
+        GameManager.Instance.houseamountai += 1;
         transform.GetChild(0).gameObject.SetActive(false);
     }
 

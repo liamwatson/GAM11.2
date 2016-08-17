@@ -54,6 +54,7 @@ public class OilRefine : MonoBehaviour {
                 GameManager.Instance.power -= powerdrain;
                 GameManager.Instance.oil -= oilconsumption;
                 GameManager.Instance.money += moneyreward;
+                GameManager.Instance.totalmoney += moneyreward;
                 timer = refcooldown;
             }
         }

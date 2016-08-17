@@ -10,9 +10,9 @@ public class GameManager : MonoBehaviour {
     private bool hastriggerd = false;
 
     //pause variables
-    private bool ispaused = false;
+    private int ispaused = 0;
     public GameObject pausedgo;
-
+    public GameObject fastforward;
     //music variables
     public AudioSource music;
     public AudioClip daymusic;
@@ -92,6 +92,18 @@ public class GameManager : MonoBehaviour {
     public Text PopulationText;
     public Text MaxPopulationText;
 
+    //ai variables
+    public int solarpanelsamountai = 0;
+    public int farmsamountai = 0;
+    public int houseamountai = 0;
+    public float aitimer = 0;
+    public int totalmoney;
+    public bool taxreduced = false;
+    public float catastrophycooldown = 10;
+    public float catastrophytimer = 0;
+    public int randomchangeincrease = 1;
+    public int catchanceincrease = 1;
+
     //singleton declaration
     public static GameManager Instance;
 
@@ -108,11 +120,13 @@ public class GameManager : MonoBehaviour {
         music.PlayDelayed(1);
         poptimer = poplosstimercooldown;
         reasearchicon.SetActive(false);
+        totalmoney = money;
     }
 
     void Update() {
         //run all these functions every frame
         TimerHour += Time.deltaTime;
+        ai();
         GameTime();
         Nightcycle();
         GuiUpdate();
@@ -127,10 +141,92 @@ public class GameManager : MonoBehaviour {
             GameManager.Instance.Messagefunction("Warning no power");
             hastriggerd = true;
         }
-       else if (power > 0 && hastriggerd == true)
+        else if (power > 0 && hastriggerd == true)
             hastriggerd = false;
 
     }
+    //AI functions, this function looks at what the player is doing and makes changes to the game in order counteract what the player is doing, or make it harder.
+    public void ai()
+    {
+        aitimer += Time.deltaTime;
+        //check if the player is getting too many of a certain building
+        if (solarpanelsamountai > 8 && solarpanelsamountai <= 12)
+        {
+            //if the player is getting excess amount of solar or as the game is progressing it will fall night earlier to make it more difficult
+            nighttime = 21;
+        }
+        else if (solarpanelsamountai > 12 && solarpanelsamountai <= 16)
+        {
+            //increasing more difficult as the player gets further through the game
+            nighttime = 20;
+        }
+        if (farmsamountai > 10 && farmsamountai < 14)
+        {
+            morningtime = 8;
+        }
+        else if (farmsamountai > 13 && farmsamountai < 20)
+        {
+            morningtime = 9;
+        }
+        //tax reduction based on difficulty level
+        if (totalmoney > 7000 && taxreduced == false)
+        {
+            taxmodifier -= 1;
+            Messagefunction("Tax lowered due to riots");
+            taxreduced = true;
+        }
+        //if the player builds 20 houses then there an increased chance of disaster happening.
+        if (houseamountai >= 20)
+        {
+            catchanceincrease = 3;
+        }
+
+        //when disasters start happening (randomly)
+        if (aitimer > 480)
+        {
+            if (catastrophytimer > 0)
+            {
+                catastrophytimer -= Time.deltaTime;
+            }
+            if (catastrophytimer <= 0)
+            {
+                int rndcatast = Random.Range(0, 250);
+                Debug.Log(rndcatast);
+                if (rndcatast <= randomchangeincrease)
+                {
+                    //catastrophy happens
+                    int rndcat = Random.Range(0, 3);
+                    if (rndcat == 0)
+                    {
+                        Debug.Log("plague disaster");
+                        Messagefunction("Radiation fall out");
+                        population -= population / 2;
+                        randomchangeincrease = 1;
+                    }
+                    if (rndcat == 1)
+                    {
+                        Debug.Log("theft disaster");
+                        Messagefunction("Some one stole money from you");
+                        money = money / 10;
+                        randomchangeincrease = 1;
+                    }
+                    if (rndcat == 2)
+                    {
+                        Debug.Log("crop disaster");
+                        Messagefunction("crops are dieing");
+                        food = food / 5;
+                        randomchangeincrease = 1;
+                    }
+                }
+                else
+                {
+                    randomchangeincrease += catchanceincrease;
+                }
+                catastrophytimer = catastrophycooldown;
+            }
+        }
+    }
+
     //GUI quit button
     public void quitbutton()
     {
@@ -167,18 +263,24 @@ public class GameManager : MonoBehaviour {
     // this function switches between paused and not altering Time.timeScale
     public void pausefunction()
     {
-        Debug.Log(ispaused);
-        if (ispaused == false)
+        if (ispaused == 0)
         {
             Time.timeScale = 0;
             pausedgo.SetActive(true);
-            ispaused = true;
+            ispaused = 1;
         }
-       else if (ispaused == true)
+       else if (ispaused == 1)
+        {
+            Time.timeScale = 5;
+            fastforward.SetActive(true);
+            pausedgo.SetActive(false);
+            ispaused = 2;
+        }
+        else if (ispaused == 2)
         {
             Time.timeScale = 1;
-            pausedgo.SetActive(false);
-            ispaused = false;
+            fastforward.SetActive(false);
+            ispaused = 0;
         }
     }
     // this makes sure that only one research center can be built, once it is it will turn off the icon GUI so the 
@@ -258,7 +360,7 @@ public class GameManager : MonoBehaviour {
                 //checks the intensity of sun and modifies it until its at the required dark amount
                 if (sun.intensity > 0.05f)
                 {
-                    sun.intensity -= 0.002f;
+                    sun.intensity -= (0.002f*Time.timeScale);
                 }
                 else
                 {
@@ -283,7 +385,7 @@ public class GameManager : MonoBehaviour {
             //sets the sun intencity untill its required amount reached
                 if (sun.intensity < 1)
             {
-                sun.intensity += 0.002f;
+                sun.intensity += (0.002f * Time.timeScale);
             }
             else
             {
@@ -349,6 +451,7 @@ public class GameManager : MonoBehaviour {
             //displays the amount of income (tax) the player recieves per in game hour in relation to pop
             Messagefunction("Tax Recieved: " + "$" + (population / 10) * taxmodifier);
             money += (population / 10) * taxmodifier;
+            totalmoney += (population / 10) * taxmodifier;
             GameHour += 1;
             TimerHour = 0;
             hourtext = TimerGameobject.GetComponent<Text>();

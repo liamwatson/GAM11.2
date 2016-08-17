@@ -51,7 +51,7 @@ public class house : MonoBehaviour {
             {
                 //10% chance of killing a pop every cycle
                 float randomnumber = Random.Range(0, 10);
-                if (randomnumber <= 1.0f)
+                if (randomnumber <= 3)
                 {
                     GameManager.Instance.population -= 1;
                     //update and let the player know a person has died
